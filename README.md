@@ -63,5 +63,17 @@ python tfrec_data_thread.py --bottleneck_dir=<Path to cache bottleneck> --tfreco
 **Example**
 ```shell
 python tfrec_data_thread.py  # Run as Default with validation 10% testing 10% , 5 shards and 5 threads
-python tfrec_data_thread.py --bottleneck_dir=./bottleneck --tfrecord_dir=./bottleneck_tf --validation_percentage=10 --10 --num_shards=5 --num_threads=5
+python tfrec_data_thread.py --bottleneck_dir=./bottleneck --tfrecord_dir=./bottleneck_tf --validation_percentage=10 --testing_percentage=10 --num_shards=5 --num_threads=5
 ```
+
+### Start Training!
+This training will utlize the TFRecord data only instead of .txt file as stated. As introcued in the official tutorial, only the last fully connected layer is traine. In order to train, learning rate, training steps, validation percentage, testing percentage and so on need to be specified.
+
+```shell
+python retrain_attempt_v3_tfrec.py --image_dir=<Path to original images> --tfrecord_dir=<Path to store tfrecord bottleneck> --output_graph=<Where to save the trained graph> --output_labels=<Where to save the trained graph's labels> --how_many_training_steps =<# of training steps> --learning_rate=<learning rate> --validation_percentage=<validation %> --testing_percentage=<testing %> --num_shards=<number of tfrecords files>
+**Example**
+```shell
+python retrain_attempt_v3_tfrec.py --image_dir=./flower_photos  # Run as Default flower photos in the same directory
+python retrain_attempt_v3_tfrec.py --image_dir=./flower_photos --validation_percentage=10 --testing_percentage=10 --num_shards=5 # Run as Default flower photos in the same directory with specified validation/testing percentage and number of shards
+```
+
