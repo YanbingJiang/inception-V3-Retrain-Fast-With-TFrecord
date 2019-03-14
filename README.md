@@ -70,6 +70,14 @@ python retrain_attempt_v3_tfrec.py --image_dir=<Path to original images> --tfrec
 python retrain_attempt_v3_tfrec.py --image_dir=./flower_photos  # Run as Default flower photos in the same directory
 python retrain_attempt_v3_tfrec.py --image_dir=./flower_photos --validation_percentage=10 --testing_percentage=10 --num_shards=5 # Run as Default flower photos in the same directory with specified validation/testing percentage and number of shards
 ```
+
+## Testing Results
+
+**Environment:**
+Windows 8.1 / CPU Intel(R) Core(TM) i7-5500U / GPU GeForce 940M
+* Original [retrain.py](https://github.com/tensorflow/hub/blob/master/examples/image_retraining/retrain.py): 728 seconds
+* This repository: &nbsp;&nbsp;&nbsp;&nbsp; **163 seconds**
+
 ## Author
 
 * **Yanbing Jiang**
