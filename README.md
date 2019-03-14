@@ -45,7 +45,7 @@ python create_image_bottlenecks.py --image_dir=./flowers_photo --bottleneck_dir=
 ### Convert Bottlenecks to TFRecords Format
 When creating the TFRecords, the dataset needs to be splited into training set, validation set and testing set as well. The same work as 'create_image_list' function in [retrain.py](https://github.com/tensorflow/hub/blob/master/examples/image_retraining/retrain.py). Thus, percentage of validation set and percentage of testing set needs to specified. Number of shards is a parameter to specify how many tfrecord file you would like to have to one set. For example, if num_shards = 5, it will divide training set into 5 tfrecord file evenly, so as validation set and testing set.
 
-* Option 1: Covert Data Sequetially, for flower set is fast enough
+* *Option 1*: Covert Data Sequetially, for flower set is fast enough
 ```shell
 python tfrec_data.py --bottleneck_dir=<Path to cache bottleneck> --tfrecord_dir=<Path to store tfrecord bottleneck> --validation_percentage=<validation %> --testing_percentage=<testing %> --num_shards=<number of tfrecords files>
 ```
@@ -55,13 +55,13 @@ python tfrec_data.py  # Run as Default with validation 10% testing 10% and 5 sha
 python tfrec_data.py --bottleneck_dir=./bottleneck --tfrecord_dir=./bottleneck_tf --validation_percentage=10 --10 --num_shards=5
 ```
 
-* Option 2: Covert Data in multi-threads behavious, for larger dataset convertion
+* *Option 2*: Covert Data in multi-threads behavious, for larger dataset convertion
 Note that number of shards mod number of threads needs to qual to zero (num_shards % num_threads == 0) to make it work.
 ```shell
 python tfrec_data_thread.py --bottleneck_dir=<Path to cache bottleneck> --tfrecord_dir=<Path to store tfrecord bottleneck> --validation_percentage=<validation %> --testing_percentage=<testing %> --num_shards=<number of tfrecords files> --num_threads=<number of threads>
 ```
 **Example**
 ```shell
-python tfrec_data_thread.py  # Run as Default with validation 10% testing 10% and 5 shards
+python tfrec_data_thread.py  # Run as Default with validation 10% testing 10% , 5 shards and 5 threads
 python tfrec_data_thread.py --bottleneck_dir=./bottleneck --tfrecord_dir=./bottleneck_tf --validation_percentage=10 --10 --num_shards=5 --num_threads=5
 ```
