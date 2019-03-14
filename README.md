@@ -58,10 +58,10 @@ python tfrec_data.py --bottleneck_dir=./bottleneck --tfrecord_dir=./bottleneck_t
 * Option 2: Covert Data in multi-threads behavious, for larger dataset convertion
 Note that number of shards mod number of threads needs to qual to zero (num_shards % num_threads == 0) to make it work.
 ```shell
-python tfrec_data_threadpy --bottleneck_dir=<Path to cache bottleneck> --tfrecord_dir=<Path to store tfrecord bottleneck> --validation_percentage=<validation %> --testing_percentage=<testing %> --num_shards=<number of tfrecords files> --num_threads=<number of threads>
+python tfrec_data_thread.py --bottleneck_dir=<Path to cache bottleneck> --tfrecord_dir=<Path to store tfrecord bottleneck> --validation_percentage=<validation %> --testing_percentage=<testing %> --num_shards=<number of tfrecords files> --num_threads=<number of threads>
 ```
 **Example**
 ```shell
-python tfrec_data_threadpy.py  # Run as Default with validation 10% testing 10% and 5 shards
-python tfrec_data_threadpy.py --bottleneck_dir=./bottleneck --tfrecord_dir=./bottleneck_tf --validation_percentage=10 --10 --num_shards=5 --num_threads=5
+python tfrec_data_thread.py  # Run as Default with validation 10% testing 10% and 5 shards
+python tfrec_data_thread.py --bottleneck_dir=./bottleneck --tfrecord_dir=./bottleneck_tf --validation_percentage=10 --10 --num_shards=5 --num_threads=5
 ```
