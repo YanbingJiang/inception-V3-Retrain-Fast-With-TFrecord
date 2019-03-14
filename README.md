@@ -75,4 +75,4 @@ python retrain_attempt_v3_tfrec.py --image_dir=./flower_photos --validation_perc
 * **Yanbing Jiang**
 
 ## License
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/YanbingJiang/inception-V3-Retrain-Fast-With-TFrecord/blob/master/LICENSE) file for details
