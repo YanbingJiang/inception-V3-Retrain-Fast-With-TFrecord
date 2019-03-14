@@ -1,6 +1,6 @@
 # Copyright 2015 The TensorFlow Authors. All Rights Reserved.
 
-# Revised by Yanbing Jiang Copyright 2019
+# Revised by Yanbing Jiang Copyright 2019.
 
 """Simple transfer learning with image modules from local stored pb model
 This file generates all image files's Bottlenecks before Softmax Tensor
@@ -51,8 +51,11 @@ import pandas as pd
 
 FLAGS = None  
   
-# 这些是所有的参数，我们使用这些参数绑定到特定的Inceptionv3_move_direct模型结构。  
-#这些包括张量名称和它们的尺寸。如果您想使此脚本与其他模型相适应，您将需要更新这些映射你在网络中使用的值。  
+# Underneath are all the parameters, which are corresponding to the Inception V3 Model
+# Tensors Including Tensor names, sizes (e.g. Image sizes)
+# If you want to use this script to work on your own model, you may need to update those
+# tensor name and size
+
 # pylint：disable=line-too-long  
 DATA_URL = 'http://download.tensorflow.org/models/image/imagenet/inception-2015-12-05.tgz'
 
@@ -72,25 +75,36 @@ MAX_NUM_IMAGES_PER_CLASS = 2 ** 27 - 1  # ~134M
 BOTTLENECK_PATH = '.\\v3_move_direct\\bottleneck'
   
 def create_image_lists(image_dir):  
-  """从文件系统生成训练图像列表。分析图像目录中的子文件夹，将其分割成稳定的训练、测试和验证集，并返回数据结构，描述每个标签及其路径的图像列表。 
-  Args： 
-    image_dir：一个包含图片子文件夹的文件夹的字符串路径。 
-    testing_percentage：预留测试图像的整数百分比。 
-    validation_percentage：预留验证图像的整数百分比。 
-  Returns： 
-    一个字典包含进入每一个标签的子文件夹和分割到每个标签的训练，测试和验证集的图像。 
-  """  
+"""Builds a list of training images from the file system.
+
+Analyzes the sub folders in the image directory, splits them into stable
+training, testing, and validation sets, and returns a data structure
+describing the lists of images for each label and their paths.
+
+Args:
+  image_dir: String path to a folder containing subfolders of images.
+  testing_percentage: Integer percentage of the images to reserve for tests.
+  validation_percentage: Integer percentage of images reserved for validation.
+
+Returns:
+  An OrderedDict containing an entry for each label subfolder, with images
+  split into training, testing, and validation sets within each label.
+  The order of items defines the class indices.
+"""
   if not gfile.Exists(image_dir):  
     print("Image directory '" + image_dir + "' not found.")  
     return None  
   result = {}  
-  sub_dirs = [x[0] for x in gfile.Walk(image_dir)]  
-  # 首先进入根目录，所以先跳过它。  
+  sub_dirs = [x[0] for x in gfile.Walk(image_dir)]
+
+  # The root directory comes first, so skip it.
   is_root_dir = True  
   for sub_dir in sub_dirs:  
     if is_root_dir:  
       is_root_dir = False  
-      continue  
+      continue
+
+    # Different types of extensions
     extensions = ['jpg', 'jpeg', 'JPG', 'JPEG']  
     file_list = []  
     dir_name = os.path.basename(sub_dir)  
@@ -108,10 +122,11 @@ def create_image_lists(image_dir):
       # Create Writer Object
       wr = csv.writer(resultFyle, dialect='excel')
 
-    print("Looking for images in '" + dir_name + "'")  
+    print("Looking for images in '" + dir_name + "'")
+
+    # For quick reading, image_list pre_created as a CSV file
+    # Incredible speed up if you have millions of images and work on SSD 
     for extension in extensions:  
-      # file_glob = os.path.join(image_dir, dir_name, '*.' + extension)  
-      # file_list.extend(gfile.Glob(file_glob))
       if not file_list_exist:
         file_glob = os.path.join(image_dir, dir_name, '*.' + extension)  
         file_list.extend(gfile.Glob(file_glob))
@@ -136,6 +151,7 @@ def create_image_lists(image_dir):
       for item in file_list:
         wr.writerow([item])
 
+    # Obtain the image list for all in the folder
     all_images = []  
 
     for file_name in file_list:  
@@ -152,16 +168,22 @@ def create_image_lists(image_dir):
   
   
 def get_image_path(image_lists, label_name, index, image_dir, category):  
-  """"返回给定索引中标签的图像路径。 
-  Args： 
-    image_lists：训练图像每个标签的词典。 
-    label_name：我们想得到的一个图像的标签字符串。 
-    index：我们想要图像的Int 偏移量。这将以标签的可用的图像数为模，因此它可以任意大。 
-    image_dir：包含训练图像的子文件夹的根文件夹字符串。 
-    category：从图像训练、测试或验证集提取的图像的字符串名称。 
-  Returns： 
-    将文件系统路径字符串映射到符合要求参数的图像。 
-  """  
+  """Returns a path to an image for a label at the given index.
+
+  Args:
+    image_lists: OrderedDict of training images for each label.
+    label_name: Label string we want to get an image for.
+    index: Int offset of the image we want. This will be moduloed by the
+    available number of images for the label, so it can be arbitrarily large.
+    image_dir: Root folder string of the subfolders containing the training
+    images.
+    category: Name string of set to pull images from - training, testing, or
+    validation.
+
+  Returns:
+    File system path string to an image that meets the requested parameters.
+
+  """
   if label_name not in image_lists:  
     tf.logging.fatal('Label does not exist %s.', label_name)  
   label_lists = image_lists[label_name]  
@@ -180,25 +202,28 @@ def get_image_path(image_lists, label_name, index, image_dir, category):
   
 def get_bottleneck_path(image_lists, label_name, index, bottleneck_dir,  
                         category):  
-  """"返回给定索引中的标签的瓶颈文件的路径。 
-  Args： 
-    image_lists：训练图像每个标签的词典。 
-    label_name：我们想得到的一个图像的标签字符串。 
-    index：我们想要图像的Int 偏移量。这将以标签的可用的图像数为模，因此它可以任意大。 
-    bottleneck_dir：文件夹字符串保持缓存文件的瓶颈值。 
-    category：从图像训练、测试或验证集提取的图像的字符串名称。 
-  Returns： 
-    将文件系统路径字符串映射到符合要求参数的图像。 
-  """  
-  return get_image_path(image_lists, label_name, index, bottleneck_dir,  
-                        category) + '.txt'  
-  
-""""从保存的GraphDef文件创建一个图像并返回一个图像对象。 
-  Returns： 
-    我们将操作的持有训练的Inception网络和各种张量的图像。 
-"""    
-def create_inception_graph():  
-  
+  """Returns a path to a bottleneck file for a label at the given index.
+
+  Args:
+    image_lists: OrderedDict of training images for each label.
+    label_name: Label string we want to get an image for.
+    index: Integer offset of the image we want. This will be moduloed by the
+    available number of images for the label, so it can be arbitrarily large.
+    bottleneck_dir: Folder string holding cached files of bottleneck values.
+    category: Name string of set to pull images from - training, testing, or
+    validation.
+    module_name: The name of the image module being used.
+
+  Returns:
+    File system path string to an image that meets the requested parameters.
+  """
+  return get_image_path(image_lists, label_name, index, bottleneck_dir, category) + '.txt'  
+
+def create_inception_graph():
+  """"Create a graph from the stored GraphDef file and return a graph object
+  Returns：
+    A graph contains the inception CNN and all the tensors we needs 
+  """ 
   with tf.Session() as sess:  
     model_filename = os.path.join(  
         FLAGS.model_dir, 'classify_image_graph_def.pb')  
@@ -211,24 +236,28 @@ def create_inception_graph():
               RESIZED_INPUT_TENSOR_NAME]))  
   return sess.graph, bottleneck_tensor, jpeg_data_tensor, resized_input_tensor  
   
-  """在图像上运行推理以提取“瓶颈”摘要层。 
-  Args： 
-    sess：当前活动的tensorflow会话。 
-    image_data：原JPEG数据字符串。 
-    image_data_tensor：图中的输入数据层。 
-    bottleneck_tensor：最后一个softmax之前的层。 
-  Returns： 
-    NumPy数组的瓶颈值。 
-  """ 
-def run_bottleneck_on_image(sess, image_data, image_data_tensor, bottleneck_tensor):  
+
+def run_bottleneck_on_image(sess, image_data, image_data_tensor, bottleneck_tensor):
+  """Runs inference on an image to extract the 'bottleneck' summary layer.
+  Args:
+    sess: Current active TensorFlow Session.
+    image_data: String of raw JPEG data.
+    image_data_tensor: Input data layer in the graph.
+    bottleneck_tensor: Layer before the final softmax.
+
+  Returns:
+    Numpy array of bottleneck values.
+  """  
   bottleneck_values = sess.run(bottleneck_tensor, {image_data_tensor: image_data})  
   bottleneck_values = np.squeeze(bottleneck_values)  
   return bottleneck_values  
   
-"""下载并提取模型的tar文件。 
-    如果我们使用的pretrained模型已经不存在，这个函数会从tensorflow.org网站下载它并解压缩到一个目录。 
-  """   
-def maybe_download_and_extract():  
+
+def maybe_download_and_extract():
+  """Download and extract the tar file for inception model
+     If the model is not in the --model_dir folder, this function will download
+     a pre-trained from from tensorflow.org and extract it to --model_dir 
+  """    
   dest_directory = FLAGS.model_dir  
   if not os.path.exists(dest_directory):  
     os.makedirs(dest_directory)  
@@ -249,18 +278,18 @@ def maybe_download_and_extract():
     statinfo = os.stat(filepath)  
     print('Successfully downloaded', filename, statinfo.st_size, 'bytes.')  
   tarfile.open(filepath, 'r:gz').extractall(dest_directory)  
-  
-"""确保文件夹已经在磁盘上存在。 
-  Args: 
-    dir_name: 我们想创建的文件夹路径的字符串。 
+
+def ensure_dir_exists(dir_name):
+  """Makes sure the folder exists on disk.
+
+  Args:
+    dir_name: Path string to the folder we want to create.
   """  
-def ensure_dir_exists(dir_name):  
   if not os.path.exists(dir_name):  
     os.makedirs(dir_name)  
   
   
-def create_bottleneck_file(bottleneck_path, image_lists, label_name, index,  
-                           image_dir, category, sess, jpeg_data_tensor, bottleneck_tensor):  
+def create_bottleneck_file(bottleneck_path, image_lists, label_name, index, image_dir, category, sess, jpeg_data_tensor, bottleneck_tensor):  
   print('Creating bottleneck at ' + bottleneck_path)  
   image_path = get_image_path(image_lists, label_name, index, image_dir, category)  
   if not gfile.Exists(image_path):  
@@ -271,23 +300,27 @@ def create_bottleneck_file(bottleneck_path, image_lists, label_name, index,
   with open(bottleneck_path, 'w') as bottleneck_file:  
     bottleneck_file.write(bottleneck_string)
 
-    """检索或计算图像的瓶颈值。 
-   如果磁盘上存在瓶颈数据的缓存版本，则返回，否则计算数据并将其保存到磁盘以备将来使用。 
- Args: 
-   sess:当前活动的tensorflow会话。 
-   image_lists：每个标签的训练图像的词典。 
-   label_name：我们想得到一个图像的标签字符串。 
-   index：我们想要的图像的整数偏移量。这将以标签图像的可用数为模，所以它可以任意大。 
-   image_dir：包含训练图像的子文件夹的根文件夹字符串。 
-   category：从图像训练、测试或验证集提取的图像的字符串名称。 
-   bottleneck_dir：保存着缓存文件瓶颈值的文件夹字符串。 
-   jpeg_data_tensor：满足加载的JPEG数据进入的张量。 
-   bottleneck_tensor：瓶颈值的输出张量。 
- Returns: 
-   通过图像的瓶颈层产生的NumPy数组值。 
-  """  
-  
 def get_or_create_bottleneck(sess, image_lists, label_name, index, image_dir,category, bottleneck_dir, jpeg_data_tensor, bottleneck_tensor):
+  """Retrieves or calculates bottleneck values for an image.
+
+  If a cached version of the bottleneck data exists on-disk, return that,
+  otherwise calculate the data and save it to disk for future use.
+
+  Args:
+    sess: The current active TensorFlow Session.
+    image_lists: OrderedDict of training images for each label.
+    label_name: Label string we want to get an image for.
+    index: Integer offset of the image we want. This will be modulo-ed by the
+    image_dir: Root folder string of the subfolders containing the training images.
+    category: Name string of which set to pull images from - training, testing, or validation.
+    bottleneck_dir: Folder string holding cached files of bottleneck values.
+    jpeg_data_tensor: The tensor to feed loaded jpeg data into.
+    bottleneck_tensor: The penultimate output layer of the graph.
+    
+  Returns:
+    Numpy array of values produced by the bottleneck layer for the image.
+  """
+
   label_lists = image_lists[label_name]  
   sub_dir = label_lists['dir']  
   sub_dir_path = os.path.join(bottleneck_dir, sub_dir)  
@@ -307,24 +340,33 @@ def get_or_create_bottleneck(sess, image_lists, label_name, index, image_dir,cat
     create_bottleneck_file(bottleneck_path, image_lists, label_name, index, image_dir, category, sess, jpeg_data_tensor, bottleneck_tensor)  
     with open(bottleneck_path, 'r') as bottleneck_file:  
       bottleneck_string = bottleneck_file.read()  
-    #允许在这里传递异常，因为异常不应该发生在一个新的bottleneck创建之后。  
+    # Allow exceptions to propagate here, since they shouldn't happen after a fresh creation
     bottleneck_values = [float(x) for x in bottleneck_string.split(',')]  
   return bottleneck_values  
 
+  
+def cache_bottlenecks(sess, image_lists, image_dir, bottleneck_dir, jpeg_data_tensor, bottleneck_tensor):
+  """Ensures all the training, testing, and validation bottlenecks are cached.
 
-"""确保所有的训练，测试和验证瓶颈被缓存。 
-  因为我们可能会多次读取同一个图像（如果在训练中没有应用扭曲）。如果我们每个图像预处理期间的瓶颈层值只计算一次，在训练时只需反复读取这些缓存值，能大幅的加快速度。在这里，我们检测所有发现的图像，计算那些值，并保存。 
-  Args： 
-    sess：当前活动的tensorflow会话。 
-    image_lists：每个标签的训练图像的词典。 
-    image_dir：包含训练图像的子文件夹的根文件夹字符串。 
-    bottleneck_dir：保存着缓存文件瓶颈值的文件夹字符串。 
-    jpeg_data_tensor：从文件输入的JPEG数据的张量。 
-    bottleneck_tensor：图中的倒数第二输出层。 
-  Returns: 
-   无。 
-  """  
-def cache_bottlenecks(sess, image_lists, image_dir, bottleneck_dir, jpeg_data_tensor, bottleneck_tensor): 
+  Because we're likely to read the same image multiple times (if there are no
+  distortions applied during training) it can speed things up a lot if we
+  calculate the bottleneck layer values once for each image during
+  preprocessing, and then just read those cached values repeatedly during
+  training. Here we go through all the images we've found, calculate those
+  values, and save them off.
+
+  Args:
+    sess: The current active TensorFlow Session.
+    image_lists: OrderedDict of training images for each label.
+    image_dir: Root folder string of the subfolders containing the training
+    images.
+    bottleneck_dir: Folder string holding cached files of bottleneck values.
+    jpeg_data_tensor: Input tensor for jpeg data from file.
+    bottleneck_tensor: The penultimate output layer of the graph.
+
+  Returns:
+    Nothing.
+  """
   how_many_bottlenecks = 0  
   ensure_dir_exists(bottleneck_dir)  
   for label_name, label_lists in image_lists.items():
@@ -339,37 +381,33 @@ def cache_bottlenecks(sess, image_lists, image_dir, bottleneck_dir, jpeg_data_te
       if how_many_bottlenecks % 100 == 0:  
         print(str(how_many_bottlenecks) + ' bottleneck files created.')  
   
-#设置我们写入TensorBoard摘要的目录。  
+
 def main(_):  
-  #设置预训练图像。  
+  # Download and extract the inception v3 graph
   maybe_download_and_extract()  
   graph, bottleneck_tensor, jpeg_data_tensor, resized_image_tensor = (create_inception_graph())  
   
-  #查看文件夹结构，创建所有图像的列表。  
+  # Look up the file list and create image list
   image_lists = create_image_lists(FLAGS.image_dir)  
   class_count = len(image_lists.keys())
 
+  # special number of classes solution
   if class_count == 0:  
     print('No valid folders of images found at ' + FLAGS.image_dir)  
     return -1  
   if class_count == 1:  
     print('Only one valid folder of images found at ' + FLAGS.image_dir + ' - multiple classes are needed for classification.')  
     return -1  
-  
-  #看命令行标记是否意味着我们应用任何扭曲操作。  
-  # do_distort_images = should_distort_images(FLAGS.flip_left_right, FLAGS.random_crop, FLAGS.random_scale,FLAGS.random_brightness)
+
+  # Session starts  
   sess = tf.Session() 
 
-  startTime = time.time() 
-  # 我们将应用扭曲，因此设置我们需要的操作
-  # if do_distort_images:  
-  #   distorted_jpeg_data_tensor, distorted_image_tensor = add_input_distortions(FLAGS.flip_left_right, FLAGS.random_crop, FLAGS.random_scale, FLAGS.random_brightness)  
-  # else:  
-    #我们确定计算bottleneck图像总结并缓存在磁盘上。  
   cache_bottlenecks(sess, image_lists, FLAGS.image_dir, FLAGS.bottleneck_dir, jpeg_data_tensor, bottleneck_tensor)
   print("\nBottlenecks' Generation is done, located at ", FLAGS.bottleneck_dir)
+
+  # Print out the time needed to create bottlenecks
   print("Time taken: %f" % (time.time() - startTime))
-    # exit(0)
+
   
 if __name__ == '__main__':  
   parser = argparse.ArgumentParser()  
