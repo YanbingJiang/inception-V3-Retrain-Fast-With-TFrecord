@@ -5,7 +5,7 @@ Transfer learning for inception V3 is popular [tutorial](https://www.tensorflow.
 This repository improved with quick data read and process to make the training more efficient by utilizing [TFRecord](https://www.tensorflow.org/tutorials/load_data/tf_records).
 
 ## Compatibility
-Tested under Tensorflow 1.6.0/1.9.0/1.12.0 with GPU support under Python 3.6.0.
+Tested under Tensorflow 1.6.0/1.9.0/1.12.0 with GPU support under Python 3.6.0 under Windows.
 
 ## Description of the Code
 This repository splited the training process into three steps:
@@ -24,13 +24,6 @@ pip3 install -r requirements.txt # For Python3, 'pip3' may vary to 'pip' depends
 
 ### Data Preparation
 Follow http://download.tensorflow.org/example_images/flower_photos.tgz to download the flower images and extract.
-
-For Linux:
-```shell
-cd ~
-curl -LO http://download.tensorflow.org/example_images/flower_photos.tgz
-tar xzf flower_photos.tgz
-```
 
 ### Create Bottlenecks
 ```shell
@@ -71,9 +64,15 @@ This training will utlize the TFRecord data only instead of .txt file as stated.
 
 ```shell
 python retrain_attempt_v3_tfrec.py --image_dir=<Path to original images> --tfrecord_dir=<Path to store tfrecord bottleneck> --output_graph=<Where to save the trained graph> --output_labels=<Where to save the trained graph's labels> --how_many_training_steps =<# of training steps> --learning_rate=<learning rate> --validation_percentage=<validation %> --testing_percentage=<testing %> --num_shards=<number of tfrecords files>
+```
 **Example**
 ```shell
 python retrain_attempt_v3_tfrec.py --image_dir=./flower_photos  # Run as Default flower photos in the same directory
 python retrain_attempt_v3_tfrec.py --image_dir=./flower_photos --validation_percentage=10 --testing_percentage=10 --num_shards=5 # Run as Default flower photos in the same directory with specified validation/testing percentage and number of shards
 ```
+## Author
 
+* **Yanbing Jiang**
+
+## License
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
