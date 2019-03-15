@@ -74,6 +74,7 @@ python retrain_attempt_v3_tfrec.py --image_dir=./flower_photos --validation_perc
 ## Testing Results
 
 **Environment:** Windows 8.1 / CPU Intel(R) Core(TM) i7-5500U / GPU GeForce 940M
+
 **Settings:** 4000 Training Steps, 10% Validation, 10% Testing, Learning Rate = 0.001, periodical eval step size = 10
 * Original [retrain.py](https://github.com/tensorflow/hub/blob/master/examples/image_retraining/retrain.py): 728 seconds
 * This repository: &nbsp;&nbsp;&nbsp;&nbsp; **163 seconds**
