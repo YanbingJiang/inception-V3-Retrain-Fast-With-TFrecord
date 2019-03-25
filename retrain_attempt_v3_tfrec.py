@@ -447,7 +447,11 @@ def main(_):
              len(sess.run(validation_bottlenecks))))  
   
   # We've completed all our training, so run a final test evaluation of some new images we haven't used before.
-  test_bottlenecks_value, test_ground_truth_value = sess.run([test_bottlenecks, test_ground_truth], {category: 'testing'})   
+  # test_bottlenecks_value, test_ground_truth_value = sess.run([test_bottlenecks, test_ground_truth], {category: 'testing'})
+
+  test_accuracy, predictions = sess.run([evaluation_step, prediction], {category: 'testing'})
+  print('Final test accuracy = %.1f%% (N=%d)' % (  
+      test_accuracy * 100, len(sess.run(test_bottlenecks))))   
     
   # Print out the total time cost
   print("Time taken: %f" % (time.time() - startTime))
