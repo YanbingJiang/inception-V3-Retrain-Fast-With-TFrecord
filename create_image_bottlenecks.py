@@ -75,22 +75,22 @@ MAX_NUM_IMAGES_PER_CLASS = 2 ** 27 - 1  # ~134M
 BOTTLENECK_PATH = '.\\v3_move_direct\\bottleneck'
   
 def create_image_lists(image_dir):  
-"""Builds a list of training images from the file system.
+  """Builds a list of training images from the file system.
 
-Analyzes the sub folders in the image directory, splits them into stable
-training, testing, and validation sets, and returns a data structure
-describing the lists of images for each label and their paths.
+  Analyzes the sub folders in the image directory, splits them into stable
+  training, testing, and validation sets, and returns a data structure
+  describing the lists of images for each label and their paths.
 
-Args:
-  image_dir: String path to a folder containing subfolders of images.
-  testing_percentage: Integer percentage of the images to reserve for tests.
-  validation_percentage: Integer percentage of images reserved for validation.
+  Args:
+    image_dir: String path to a folder containing subfolders of images.
+    testing_percentage: Integer percentage of the images to reserve for tests.
+    validation_percentage: Integer percentage of images reserved for validation.
 
-Returns:
-  An OrderedDict containing an entry for each label subfolder, with images
-  split into training, testing, and validation sets within each label.
-  The order of items defines the class indices.
-"""
+  Returns:
+    An OrderedDict containing an entry for each label subfolder, with images
+    split into training, testing, and validation sets within each label.
+    The order of items defines the class indices.
+  """
   if not gfile.Exists(image_dir):  
     print("Image directory '" + image_dir + "' not found.")  
     return None  
