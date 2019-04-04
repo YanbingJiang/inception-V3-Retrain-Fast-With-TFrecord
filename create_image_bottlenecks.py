@@ -382,7 +382,8 @@ def cache_bottlenecks(sess, image_lists, image_dir, bottleneck_dir, jpeg_data_te
         print(str(how_many_bottlenecks) + ' bottleneck files created.')  
   
 
-def main(_):  
+def main(_):
+  startTime = time.time()
   # Download and extract the inception v3 graph
   maybe_download_and_extract()  
   graph, bottleneck_tensor, jpeg_data_tensor, resized_image_tensor = (create_inception_graph())  
