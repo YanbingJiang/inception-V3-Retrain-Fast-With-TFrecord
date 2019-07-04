@@ -60,7 +60,7 @@ python tfrec_data_thread.py --bottleneck_dir=./bottleneck --tfrecord_dir=./bottl
 ```
 
 ### Start Training!
-This training will utlize the TFRecord data only instead of .txt file as stated. As introcued in the official tutorial, only the last fully connected layer is traine. In order to train, learning rate, training steps, validation percentage, testing percentage and so on need to be specified.
+This training will utlize the TFRecord data only instead of .txt file as stated. As introcued in the official tutorial, only the last fully connected layer is trained. In order to train, learning rate, training steps, validation percentage, testing percentage and so on need to be specified.
 
 ```shell
 python retrain_attempt_v3_tfrec.py --image_dir=<Path to original images> --tfrecord_dir=<Path to store tfrecord bottleneck> --output_graph=<Where to save the trained graph> --output_labels=<Where to save the trained graph's labels> --how_many_training_steps =<# of training steps> --learning_rate=<learning rate> --validation_percentage=<validation %> --testing_percentage=<testing %> --num_shards=<number of tfrecords files>
