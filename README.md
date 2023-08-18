@@ -1,6 +1,6 @@
 # inception V3 Retrain Fast Input With TFrecord QueueRunner
 
-<img src="https://socialify.git.ci/YanbingJiang/inception-V3-Retrain-Fast-With-TFrecord/image?font=Raleway&language=1&logo=https%3A%2F%2Fwww.vectorlogo.zone%2Flogos%2Ftensorflow%2Ftensorflow-icon.svg&name=1&pattern=Overlapping%20Hexagons&theme=Auto" alt="inception-V3-Retrain-Fast-With-TFrecord" width="500" />
+<img src="https://socialify.git.ci/YanbingJiang/inception-V3-Retrain-Fast-With-TFrecord/image?font=Raleway&language=1&logo=https://avatars.githubusercontent.com/u/15658638?s=200&v=4&name=1&pattern=Overlapping%20Hexagons&theme=Auto" alt="inception-V3-Retrain-Fast-With-TFrecord" width="500" />
 
 Transfer learning for inception V3 is popular [tutorial](https://www.tensorflow.org/hub/tutorials/image_retraining) from offcial Tensorflow, named as  [retrain.py](https://github.com/tensorflow/hub/blob/master/examples/image_retraining/retrain.py), which is an example script that shows how one can adapt a pretrained network for other classification problems. 
 
